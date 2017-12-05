@@ -15,11 +15,14 @@ my $keggPathwaysFile='';
 my $gmtFile='';
 my $help='';
 my %path2KO;
+my $sleep=2;
+my $sleepSET='';
 
 GetOptions(
   'help|h|?'                 => \$help,
   'license|l'                => \$license,
   'kegg_pathways_file|i=s'   => \$keggPathwaysFile,
+  'sleep_set|s'              => \$sleepSET,
   'ko_gmt|o=s'               => \$gmtFile,
 );
 
@@ -59,6 +62,11 @@ if($license) {
 
 open(KEGGPATHWAYS,$keggPathwaysFile);
 
+# Check if user provided a sleep time in seconds to wait (KEGG REST request)
+if($sleepSET){
+ $sleep = $sleepSET;
+}
+
 while(<KEGGPATHWAYS>) {
  chomp;
  my ($keggPathwayID,$keggPathwayDesc)=split(/\t/,$_);
@@ -84,7 +92,7 @@ while(<KEGGPATHWAYS>) {
   print GMT "$keggPathwayID\t$keggPathwayDesc\t".join("\t",@{$path2KO{$keggPathwayID}})."\n";
   close(GMT);
  }
- sleep 5;
+ sleep $sleep;
 }
 
 close(KEGGPATHWAYS);
@@ -101,11 +109,12 @@ USAGE
     $0 --kegg_pathways_file kegg.list.txt --ko_gmt OUTFILE.gmt
 
 OPTIONS
-    --kegg_pathways_file  -i      Input file with Kegg Pathways from list of Kegg API.                 REQUIRED
+    --kegg_pathways_file  -i      Input file with Kegg Pathways from list of Kegg API.             REQUIRED
       Example of line in this file (obtained with KEGG REST: http://rest.kegg.jp/list/pathway):
       path:map00010   Glycolysis / Gluconeogenesis
-    --ko_gmt              -o      GMT file (pathways and corresponding KOs)                            REQUIRED
-    --sleep               -s      Time (in seconds) to make server request (KEGG REST)                 OPTIONAL
+    --ko_gmt              -o      GMT file (pathways and corresponding KOs)                        REQUIRED
+    --sleep_set           -s      Time (in seconds) to make server request (KEGG REST)             OPTIONAL
+      Default time: 2 seconds
     --help                -h      This help.
     --license             -l      License.
 
