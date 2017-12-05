@@ -17,6 +17,8 @@ my $help='';
 my %path2KO;
 my $sleep=2;
 my $sleepSET='';
+my @maps2FilterOut=();
+my $maps2exclude='';
 
 GetOptions(
   'help|h|?'                 => \$help,
@@ -24,6 +26,7 @@ GetOptions(
   'kegg_pathways_file|i=s'   => \$keggPathwaysFile,
   'sleep_set|s'              => \$sleepSET,
   'ko_gmt|o=s'               => \$gmtFile,
+  'exclude_maps=s'           => \$maps2exclude,
 );
 
 if(!-s $keggPathwaysFile) {
@@ -60,7 +63,25 @@ if($license) {
  exit(0);
 }
 
-open(KEGGPATHWAYS,$keggPathwaysFile);
+if($maps2exclude){
+ open(KEGGMAPSEXCLUDE,$maps2exclude) or die "Can't open '$maps2exclude': $!";
+ while(<KEGGMAPSEXCLUDE>) {
+  chomp;
+  my $keggMap=$_;
+  if($keggMap =~ /^path:map\d\d\d\d\d$/){
+   $keggMap =~ s/path://;
+   if($keggMap ~~ @maps2FilterOut){
+    die "Something wrong (it seems there a duplicated map to exclude)... line:\n$_\n";
+   } else{
+    push(@maps2FilterOut,$keggMap);
+   }
+  } else {
+   die "Something wrong... line:\n$_\n";
+  }
+ }
+ close(KEGGMAPSEXCLUDE);
+ open(KEGGPATHWAYS,$keggPathwaysFile);
+}
 
 # Check if user provided a sleep time in seconds to wait (KEGG REST request)
 if($sleepSET){
@@ -71,6 +92,9 @@ while(<KEGGPATHWAYS>) {
  chomp;
  my ($keggPathwayID,$keggPathwayDesc)=split(/\t/,$_);
  $keggPathwayID =~ s/path://g;
+ #print join(',',@maps2FilterOut)."\n";
+ #print "$keggPathwayID\n";
+ next if ($keggPathwayID ~~ @maps2FilterOut);
  if ($path2KO{$keggPathwayID}){
   die "$keggPathwayID appears more than one time in input file.\n";
  } else {
@@ -91,6 +115,8 @@ while(<KEGGPATHWAYS>) {
   open(GMT,">>",$gmtFile);
   print GMT "$keggPathwayID\t$keggPathwayDesc\t".join("\t",@{$path2KO{$keggPathwayID}})."\n";
   close(GMT);
+ } else {
+  print "Something happened with map: $keggPathwayID. KOs could not be recovered using KEGG REST.\n";
  }
  sleep $sleep;
 }
@@ -115,6 +141,9 @@ OPTIONS
     --ko_gmt              -o      GMT file (pathways and corresponding KOs)                        REQUIRED
     --sleep_set           -s      Time (in seconds) to make server request (KEGG REST)             OPTIONAL
       Default time: 2 seconds
+    --exclude_maps                List of KEGG maps to exclude from final GMT                      OPTIONAL
+      Example of line in this file:
+      path:map05200
     --help                -h      This help.
     --license             -l      License.
 
