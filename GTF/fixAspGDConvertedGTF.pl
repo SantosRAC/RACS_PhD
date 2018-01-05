@@ -43,7 +43,7 @@ while(<WGTF>){
     $geneID =~ s/Parent=//g;
     $geneID =~ s/\-T//g;
     if($geneID ~~ @geneList){
-     print "$chrom\t$database\t$feature\t$start\t$end\t$score\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\"\n";
+     print "$chrom\t$database\t$feature\t$start\t$end\t0.000000\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\";\n";
     } else {
      die "Something is wrong in line (gene identifier not found in list: $geneID):\n$_\n";
     }
@@ -54,7 +54,7 @@ while(<WGTF>){
     $geneID =~ s/Parent=//g;
     $geneID =~ s/\-T//g;
     if($geneID ~~ @geneList){
-     print "$chrom\t$database\t$feature\t$start\t$end\t$score\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\"\n";
+     print "$chrom\t$database\t$feature\t$start\t$end\t0.000000\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\";\n";
     } else {
      die "Something is wrong in line (gene identifier not found in list: $geneID):\n$_\n";
     }
@@ -72,7 +72,7 @@ while(<WGTF>){
     $geneID =~ s/Parent=//g;
     $geneID =~ s/\-T//g;
     if($geneID ~~ @geneList){
-     print "$chrom\t$database\t$feature\t$start\t$end\t$score\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\"\n";
+     print "$chrom\t$database\t$feature\t$start\t$end\t0.000000\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$geneID\";\n";
     } else {
      die "Something is wrong in line (gene identifier not found in list: $geneID):\n$_\n";
     }
@@ -103,7 +103,7 @@ while(<WGTF>){
    }
   }
   if($geneID ~~ @geneList){
-   print "$chrom\t$database\t$feature\t$start\t$end\t$score\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\"\n";
+   print "$chrom\t$database\t$feature\t$start\t$end\t0.000000\t$strand\t$rfram\tgene_id \"$geneID\"; transcript_id \"$transcriptID\";\n";
   } else {
    die "Something is wrong in line (gene identifier not found in list: $geneID):\n$_\n";
   }
